@@ -1,0 +1,72 @@
+{
+  "pipeline": {
+    "name": "ci-cd-lab-pipeline",
+    "roleArn": "<CodePipeline-Service-Role-ARN>",
+    "stages": [
+      {
+        "name": "Source",
+        "actions": [
+          {
+            "name": "Source",
+            "actionTypeId": {
+              "category": "Source",
+              "owner": "AWS",
+              "provider": "CodeCommit",
+              "version": "1"
+            },
+            "outputArtifacts": [{"name": "SourceOutput"}],
+            "configuration": {
+              "RepositoryName": "acg-study",
+              "BranchName": "main"
+            },
+            "runOrder": 1
+          }
+        ]
+      },
+      {
+        "name": "Build",
+        "actions": [
+          {
+            "name": "Build",
+            "actionTypeId": {
+              "category": "Build",
+              "owner": "AWS",
+              "provider": "CodeBuild",
+              "version": "1"
+            },
+            "inputArtifacts": [{"name": "SourceOutput"}],
+            "outputArtifacts": [{"name": "BuildOutput"}],
+            "configuration": {
+              "ProjectName": "ci-cd-lab-build"
+            },
+            "runOrder": 1
+          }
+        ]
+      },
+      {
+        "name": "Deploy",
+        "actions": [
+          {
+            "name": "Deploy",
+            "actionTypeId": {
+              "category": "Deploy",
+              "owner": "AWS",
+              "provider": "CodeDeploy",
+              "version": "1"
+            },
+            "inputArtifacts": [{"name": "BuildOutput"}],
+            "configuration": {
+              "ApplicationName": "ci-cd-lab-app",
+              "DeploymentGroupName": "ci-cd-lab-group"
+            },
+            "runOrder": 1
+          }
+        ]
+      }
+    ],
+    "artifactStore": {
+      "type": "S3",
+      "location": "acg-study-14o812q8gd92136 "
+    }
+  }
+}
